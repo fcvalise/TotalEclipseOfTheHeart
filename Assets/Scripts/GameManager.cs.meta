@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 94493dd81933b43c6be8ad6c26026bbc
+timeCreated: 1481493080
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - m_player1: {instanceID: 0}
+  - m_player2: {instanceID: 0}
+  - m_camerasManager: {instanceID: 0}
+  - m_collectible: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
