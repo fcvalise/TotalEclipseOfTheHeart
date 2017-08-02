@@ -61,7 +61,7 @@ public class SpriteManagerScript : MonoBehaviour {
 			}
 			case PlayerScript.State.Right:
 			{
-				if (m_playerScript.m_speedBoost)
+				if (m_playerScript.m_speedBoost != 0f)
 				{
 					m_frontScript.PlayNext(SpriteScript.Sprite.FrontRunEscape);
 					m_backScript.PlayNext(SpriteScript.Sprite.FrontRunEscape);
@@ -85,7 +85,7 @@ public class SpriteManagerScript : MonoBehaviour {
 			}
 			case PlayerScript.State.Left:
 			{
-				if (m_playerScript.m_speedBoost)
+				if (m_playerScript.m_speedBoost != 0f)
 				{
 					m_frontScript.PlayNext(SpriteScript.Sprite.FrontRunEscape);
 					m_backScript.PlayNext(SpriteScript.Sprite.FrontRunEscape);

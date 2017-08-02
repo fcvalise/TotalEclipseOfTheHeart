@@ -37,7 +37,8 @@ public class PlayerScript : MonoBehaviour {
 	public State				m_state { get; private set; }
 	public PlayerSide			m_side { get; private set; }
 	public float				m_scoreTime { get; private set; }
-	public bool					m_speedBoost { get; private set; }
+	public float				m_speedBoost { get; private set; }
+	public int					m_moveCount { get; private set; }
 
 	private SpriteManagerScript m_spriteManagerScript;
 	private CamerasScript		m_camerasScript;
@@ -55,7 +56,7 @@ public class PlayerScript : MonoBehaviour {
 	private float				m_timerStun = 0f;
 	private float				m_timerStunMax = 1f;
 	private State				m_stateSaveStun = State.Idle;
-	private int					m_keyCount = 0;
+	private int					m_moveCountMax = 5;
 
 	void Start()
 	{
@@ -74,7 +75,6 @@ public class PlayerScript : MonoBehaviour {
 		UpdateState();
 		UpdateStateMobile();
 		UpdateMove();
-		UpdateKeyCount();
 		UpdateScore();
 
 		transform.position = new Vector3((int)(transform.position.x / 10) * 10, (int)(transform.position.y / 10) * 10, (int)(transform.position.z / 10) * 10);
@@ -101,7 +101,6 @@ public class PlayerScript : MonoBehaviour {
 		if (m_state == State.Idle)
 		{
 			m_state = state;
-			m_keyCount++;
 		}
 		m_isAIActive = isAI;
 	}
@@ -216,17 +215,12 @@ public class PlayerScript : MonoBehaviour {
 			m_indexCorner = m_indexMiddle;
 			if (index < 0)
 				m_indexCorner = IncrementIndex(m_indexCorner, index);
-			
-			if (m_speedBoost)
-				m_timerMove1 = Mathf.Min(m_timerMove1 + Time.deltaTime * 2f, m_timerMoveMax);
-			else
-				m_timerMove1 = Mathf.Min(m_timerMove1 + Time.deltaTime, m_timerMoveMax);
-			
+
+			m_timerMove1 = Mathf.Min(m_timerMove1 + Time.deltaTime * (1f + 1f * m_speedBoost), m_timerMoveMax);
 			transform.position = Vector3.Lerp(Constants.BottomPosition[m_indexMiddle], Constants.CornerPosition[m_indexCorner], m_timerMove1 / m_timerMoveMax);
 		}
 		else
 		{
-			m_speedBoost = false;
 
 			if (m_timerMove2 == 0f)
 			{
@@ -234,7 +228,7 @@ public class PlayerScript : MonoBehaviour {
 				m_indexMiddle = IncrementIndex(m_indexMiddle, index);
 				UpdateRotation();
 			}
-			m_timerMove2 = Mathf.Min(m_timerMove2 + Time.deltaTime, m_timerMoveMax);
+			m_timerMove2 = Mathf.Min(m_timerMove2 + Time.deltaTime * (1f + 1f * m_speedBoost), m_timerMoveMax);
 			transform.position = Vector3.Lerp(Constants.CornerPosition[m_indexCorner], Constants.BottomPosition[m_nextIndexMiddle], m_timerMove2 / m_timerMoveMax);
 		}
 
@@ -245,6 +239,7 @@ public class PlayerScript : MonoBehaviour {
 			m_state = State.Idle;
 			m_timerMove2 = 0f;
 			m_timerMove1 = 0f;
+			UpdateMoveCount();
 		}
 	}
 
@@ -300,12 +295,22 @@ public class PlayerScript : MonoBehaviour {
 		}
 	}
 
-	void UpdateKeyCount()
+	void UpdateMoveCount()
 	{
-		if (m_keyCount > 5 && m_job == Job.Cat)
+		if (m_camerasScript.m_isIntroEnded)
 		{
-			m_keyCount = 0;
-			m_speedBoost = true;
+			if (m_job == Job.Cat)
+				m_moveCount++;
+			else
+				m_moveCount = 0;
+			
+			if (m_moveCount >= m_moveCountMax)
+			{
+				m_moveCount = 0;
+				m_speedBoost = 1f;
+			}
+			else
+				m_speedBoost = 0f;
 		}
 	}
 
@@ -473,12 +478,6 @@ public class PlayerScript : MonoBehaviour {
 			case AIDifficulty.Wait:
 			default:
 				break;
-		}
-		m_keyCount++;
-		if (m_keyCount > 5 && m_job == Job.Cat)
-		{
-			m_keyCount = 0;
-			m_speedBoost = true;
 		}
 	}
 

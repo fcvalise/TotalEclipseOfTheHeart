@@ -26,7 +26,17 @@ public class InGameScoreScript : MonoBehaviour {
 	void Update()
 	{
 		if (m_pScript.IsCat())
+		{
+			if (m_pScript.m_speedBoost == 0f)
+			{
+				m_textMesh.text = "";
+				for (int i = 0; i < m_pScript.m_moveCount; i++)
+					m_textMesh.text += "|";
+			}
+			else
+				m_textMesh.text = "BOOST!";
 			m_textMesh.fontSize = 200;
+		}
 		else
 		{
 			m_textMesh.text = ((int)Constants.TimerWin - (int)m_pScript.m_scoreTime).ToString();
