@@ -40,7 +40,7 @@ public class HUD : MonoBehaviour {
 	void OnGUI()
 	{
 		m_guiStyle.normal.textColor = Color.white;
-		m_guiStyle.fontSize = 30;
+		m_guiStyle.fontSize = (int)(Screen.width / 100f);
 		m_guiStyle.alignment = TextAnchor.MiddleCenter;
 		GUI.Label(new Rect(0, 0, Screen.width, Screen.height), m_infos, m_guiStyle);
 
@@ -48,7 +48,7 @@ public class HUD : MonoBehaviour {
 		{
 			m_guiStyle.alignment = TextAnchor.UpperCenter;
 			m_guiStyle.normal.textColor = Constants.ColorBlue;
-			m_guiStyle.fontSize = 50;
+			m_guiStyle.fontSize = (int)(Screen.width / 50f);
 			GUI.Label(new Rect(0, 0, Screen.width, Screen.height), Constants.WinGameBlue.ToString(), m_guiStyle);
 			m_guiStyle.alignment = TextAnchor.LowerCenter;
 			m_guiStyle.normal.textColor = Constants.ColorRed;

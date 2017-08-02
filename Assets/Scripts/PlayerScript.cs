@@ -29,21 +29,20 @@ public class PlayerScript : MonoBehaviour {
 
 	public GameObject			m_spriteManager;
 	public GameObject			m_camerasManager;
-	public Color				m_color;
 	public KeyCode				m_keyLeft;
 	public KeyCode				m_keyRight;
 	public KeyCode				m_keyUp;
 	public KeyCode				m_keyDown;
 
-	public State				m_state { get; set; }
-	public PlayerSide			m_side { get; set; }
-	public Job					m_job { get; set;}
-	public float				m_scoreTime { get; set; }
-	public int					m_scoreCat { get; set; }
-	public bool					m_speedBoost { get; set; }
+	public State				m_state { get; private set; }
+	public PlayerSide			m_side { get; private set; }
+	public float				m_scoreTime { get; private set; }
+	public bool					m_speedBoost { get; private set; }
 
 	private SpriteManagerScript m_spriteManagerScript;
 	private CamerasScript		m_camerasScript;
+
+	private Job					m_job;
 
 	private int					m_indexMiddle = 0;
 	private int					m_nextIndexMiddle = 0;
@@ -56,7 +55,7 @@ public class PlayerScript : MonoBehaviour {
 	private float				m_timerStun = 0f;
 	private float				m_timerStunMax = 1f;
 	private State				m_stateSaveStun = State.Idle;
-	private int					m_countKey = 0;
+	private int					m_keyCount = 0;
 
 	void Start()
 	{
@@ -75,12 +74,9 @@ public class PlayerScript : MonoBehaviour {
 		UpdateState();
 		UpdateStateMobile();
 		UpdateMove();
+		UpdateKeyCount();
+		UpdateScore();
 
-		if (m_countKey > 5 && m_job == Job.Cat)
-		{
-			m_countKey = 0;
-			m_speedBoost = true;
-		}
 		transform.position = new Vector3((int)(transform.position.x / 10) * 10, (int)(transform.position.y / 10) * 10, (int)(transform.position.z / 10) * 10);
 	}
 
@@ -105,7 +101,7 @@ public class PlayerScript : MonoBehaviour {
 		if (m_state == State.Idle)
 		{
 			m_state = state;
-			m_countKey++;
+			m_keyCount++;
 		}
 		m_isAIActive = isAI;
 	}
@@ -304,6 +300,21 @@ public class PlayerScript : MonoBehaviour {
 		}
 	}
 
+	void UpdateKeyCount()
+	{
+		if (m_keyCount > 5 && m_job == Job.Cat)
+		{
+			m_keyCount = 0;
+			m_speedBoost = true;
+		}
+	}
+
+	void UpdateScore()
+	{
+		if (m_camerasScript.m_isIntroEnded && m_job == Job.Mouse)
+			m_scoreTime += Time.deltaTime;
+	}
+
 	int IncrementIndex(int index, int value)
 	{
 		const int maxCorner = 4;
@@ -337,6 +348,29 @@ public class PlayerScript : MonoBehaviour {
 			m_stateSaveStun = m_state;
 			m_state = State.Stun;
 		}
+	}
+
+	public void InitJob(Job job)
+	{
+		m_job = job;
+	}
+
+	public void InvertJob()
+	{
+		if (m_job == Job.Cat)
+			m_job = Job.Mouse;
+		else
+			m_job = Job.Cat;
+	}
+
+	public bool IsCat()
+	{
+		return m_job == Job.Cat;
+	}
+
+	public bool IsMouse()
+	{
+		return m_job == Job.Mouse;
 	}
 
 	/*
@@ -440,10 +474,10 @@ public class PlayerScript : MonoBehaviour {
 			default:
 				break;
 		}
-		m_countKey++;
-		if (m_countKey > 5 && m_job == Job.Cat)
+		m_keyCount++;
+		if (m_keyCount > 5 && m_job == Job.Cat)
 		{
-			m_countKey = 0;
+			m_keyCount = 0;
 			m_speedBoost = true;
 		}
 	}

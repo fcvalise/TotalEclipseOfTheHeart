@@ -25,14 +25,14 @@ public class BlueRedWinScript : MonoBehaviour {
 	{
 		m_guiStyle.alignment = TextAnchor.UpperLeft;
 		m_guiStyle.normal.textColor = Constants.ColorBlue;
-		m_guiStyle.fontSize = 200;
+		m_guiStyle.fontSize = (int)(Screen.width / 20f);
 		GUI.Label(new Rect(60, 0, Screen.width, Screen.height), Constants.WinGameBlue.ToString(), m_guiStyle);
 		m_guiStyle.alignment = TextAnchor.UpperRight;
 		m_guiStyle.normal.textColor = Constants.ColorRed;
 		GUI.Label(new Rect(0, 0, Screen.width, Screen.height), Constants.WinGameRed.ToString(), m_guiStyle);
 		m_guiStyle.alignment = TextAnchor.LowerRight;
 		m_guiStyle.normal.textColor = Color.white;
-		m_guiStyle.fontSize = 30;
+		m_guiStyle.fontSize = (int)(Screen.width / 70f);
 		GUI.Label(new Rect(0, 0, Screen.width, Screen.height), "Lucien COYCAULT & Francois CORBEL ", m_guiStyle);
 	}
 

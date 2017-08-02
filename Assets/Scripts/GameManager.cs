@@ -33,18 +33,23 @@ public class GameManager : MonoBehaviour {
 		m_p1Script = m_player1.GetComponent<PlayerScript>();
 		m_p2Script = m_player2.GetComponent<PlayerScript>();
 
+		InitPlayers();
+	}
+
+	void InitPlayers()
+	{
 		m_p1Script.SetStartIndex(1);
 		m_p2Script.SetStartIndex(3);
 
 		if (Random.value > 0.5f)
 		{
-			m_p1Script.m_job = PlayerScript.Job.Cat;
-			m_p2Script.m_job = PlayerScript.Job.Mouse;
+			m_p1Script.InitJob(PlayerScript.Job.Cat);
+			m_p2Script.InitJob(PlayerScript.Job.Mouse);
 		}
 		else
 		{
-			m_p1Script.m_job = PlayerScript.Job.Mouse;
-			m_p2Script.m_job = PlayerScript.Job.Cat;
+			m_p1Script.InitJob(PlayerScript.Job.Mouse);
+			m_p2Script.InitJob(PlayerScript.Job.Cat);
 		}
 	}
 
@@ -54,7 +59,6 @@ public class GameManager : MonoBehaviour {
 			SceneManager.LoadScene("MainMenu");
 		
 		UpdateCollisionPlayer();
-		UpdateScore();
 		EventEnd();
 	}
 
@@ -86,46 +90,20 @@ public class GameManager : MonoBehaviour {
 			if (m_timerCollisionPlayer == 0f)
 			{
 				m_timerCollisionPlayer = m_timerCollisionPlayerMax;
-				if (m_p1Script.m_job == PlayerScript.Job.Cat)
+				if (m_p1Script.IsCat())
 				{
 					m_p2Script.SetStun();
 					m_camerasScript.SetWinEvent(m_p1Script.m_side, 30);
 				}
-				if (m_p2Script.m_job == PlayerScript.Job.Cat)
+				if (m_p2Script.IsCat())
 				{
 					m_p1Script.SetStun();
 					m_camerasScript.SetWinEvent(m_p2Script.m_side, 30);
 				}
 				m_source.PlayOneShot(m_winSound, 1f);
-				InvertJob();
+				m_p1Script.InvertJob();
+				m_p2Script.InvertJob();
 			}
-		}
-	}
-
-	void UpdateScore()
-	{
-		if (m_camerasScript.m_isIntroEnded)
-		{
-			if (m_p1Script.m_job == PlayerScript.Job.Mouse)
-				m_p1Script.m_scoreTime += Time.deltaTime;
-			else if (m_p2Script.m_job == PlayerScript.Job.Mouse)
-				m_p2Script.m_scoreTime += Time.deltaTime;
-		}
-	}
-
-	void InvertJob()
-	{
-		if (m_p1Script.m_job == PlayerScript.Job.Cat)
-		{
-			m_p1Script.m_scoreCat++;
-			m_p1Script.m_job = PlayerScript.Job.Mouse;
-			m_p2Script.m_job = PlayerScript.Job.Cat;
-		}
-		else if (m_p2Script.m_job == PlayerScript.Job.Cat)
-		{
-			m_p2Script.m_scoreCat++;
-			m_p2Script.m_job = PlayerScript.Job.Mouse;
-			m_p1Script.m_job = PlayerScript.Job.Cat;
 		}
 	}
 }
