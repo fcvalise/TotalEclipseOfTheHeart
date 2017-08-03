@@ -56,7 +56,7 @@ public class PlayerScript : MonoBehaviour {
 	private float				m_timerStun = 0f;
 	private float				m_timerStunMax = 1f;
 	private State				m_stateSaveStun = State.Idle;
-	private int					m_moveCountMax = 5;
+	private int					m_moveCountMax = 4;
 
 	void Start()
 	{

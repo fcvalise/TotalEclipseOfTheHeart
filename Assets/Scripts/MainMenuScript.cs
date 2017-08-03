@@ -10,7 +10,7 @@ public class MainMenuScript : MonoBehaviour {
 
 	void Start()
 	{
-		Screen.SetResolution(126 * 8, 68 * 8, Screen.fullScreen);
+		//Screen.SetResolution(126 * 6, 68 * 6, Screen.fullScreen);
 	}
 
 	void Update()

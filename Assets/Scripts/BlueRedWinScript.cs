@@ -26,7 +26,7 @@ public class BlueRedWinScript : MonoBehaviour {
 		m_guiStyle.alignment = TextAnchor.UpperLeft;
 		m_guiStyle.normal.textColor = Constants.ColorBlue;
 		m_guiStyle.fontSize = (int)(Screen.width / 20f);
-		GUI.Label(new Rect(60, 0, Screen.width, Screen.height), Constants.WinGameBlue.ToString(), m_guiStyle);
+		GUI.Label(new Rect(Screen.width / 100f, 0, Screen.width, Screen.height), Constants.WinGameBlue.ToString(), m_guiStyle);
 		m_guiStyle.alignment = TextAnchor.UpperRight;
 		m_guiStyle.normal.textColor = Constants.ColorRed;
 		GUI.Label(new Rect(0, 0, Screen.width, Screen.height), Constants.WinGameRed.ToString(), m_guiStyle);
