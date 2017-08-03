@@ -11,4 +11,4 @@ Experiment about using a 3D environement in a 2D pixel game
 ### Links
 
 - [Play on itch.io](https://octostudio.itch.io/total-eclipse-of-the-heart)
-- https://youtu.be/DbxPuMXZwXg
+- https://youtu.be/9OkViJzYrWI
