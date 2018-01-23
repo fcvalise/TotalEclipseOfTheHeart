@@ -27,12 +27,19 @@ public class PlayerScript : MonoBehaviour {
 		Mouse
 	}
 
+	private static PhotonView ScenePhotonView;
+
 	public GameObject			m_spriteManager;
-	public GameObject			m_camerasManager;
 	public KeyCode				m_keyLeft;
 	public KeyCode				m_keyRight;
 	public KeyCode				m_keyUp;
 	public KeyCode				m_keyDown;
+	public GameObject			m_camerasManager;
+
+
+	public Job					m_job;
+	public bool					m_isMine;
+	public int					m_startIndex;
 
 	public State				m_state { get; private set; }
 	public PlayerSide			m_side { get; private set; }
@@ -42,8 +49,6 @@ public class PlayerScript : MonoBehaviour {
 
 	private SpriteManagerScript m_spriteManagerScript;
 	private CamerasScript		m_camerasScript;
-
-	private Job					m_job;
 
 	private int					m_indexMiddle = 0;
 	private int					m_nextIndexMiddle = 0;
@@ -60,24 +65,37 @@ public class PlayerScript : MonoBehaviour {
 
 	void Start()
 	{
-		m_state = State.Right;
+		ScenePhotonView = this.GetComponent<PhotonView>();
+
+		m_spriteManager = GameObject.Instantiate(m_spriteManager, this.transform);
 		m_spriteManagerScript = m_spriteManager.GetComponent<SpriteManagerScript>();
-		m_camerasScript = m_camerasManager.GetComponent<CamerasScript>();
-		transform.position = Constants.BottomPosition[m_indexMiddle];
+		m_spriteManagerScript.m_player = this.gameObject;
+
+		m_state = State.Idle;
+
+		m_camerasManager = GameObject.Find("CamerasManager");
+		if (m_camerasManager)
+			m_camerasScript = m_camerasManager.GetComponent<CamerasScript>();
 		InitAI();
+		SetStartIndex(m_startIndex);
+		transform.position = Constants.BottomPosition[m_indexMiddle];
 		UpdateRotation();
 	}
 
 	void Update()
 	{
-		if (m_isAIActive && m_camerasScript.m_isIntroEnded)
-			UpdateAI();
-		UpdateState();
-		UpdateStateMobile();
-		UpdateMove();
-		UpdateScore();
+		if (PhotonNetwork.playerList.Length == 2)
+		{
+			if (m_isMine)
+			{
+				UpdateState();
+				UpdateStateMobile();
+			}
+			UpdateMove();
+			UpdateScore();
 
-		transform.position = new Vector3((int)(transform.position.x / 10) * 10, (int)(transform.position.y / 10) * 10, (int)(transform.position.z / 10) * 10);
+			transform.position = new Vector3((int)(transform.position.x / 10) * 10, (int)(transform.position.y / 10) * 10, (int)(transform.position.z / 10) * 10);
+		}
 	}
 
 	void UpdateState()
@@ -96,8 +114,9 @@ public class PlayerScript : MonoBehaviour {
 		}
 	}
 
-	void SetState(State state, bool isAI)
+	public void SetState(State state, bool isAI)
 	{
+
 		if (m_state == State.Idle)
 		{
 			m_state = state;
@@ -131,7 +150,7 @@ public class PlayerScript : MonoBehaviour {
 				if (m_state == State.Idle)
 					MoveMobile(side);
 
-				m_camerasScript.SetWinEvent(side, 10);
+				//m_camerasScript.SetWinEvent(side, 10);
 				m_isAIActive = false;
 			}
 		}
@@ -157,7 +176,7 @@ public class PlayerScript : MonoBehaviour {
 			if (m_state == State.Idle)
 				MoveMobile(side);
 
-			m_camerasScript.SetWinEvent(side, 10);
+			//m_camerasScript.SetWinEvent(side, 10);
 			m_isAIActive = false;
 		}
 	}
@@ -166,7 +185,7 @@ public class PlayerScript : MonoBehaviour {
 	{
 		int index = (int)side;
 		int playerIndex = m_nextIndexMiddle;
-		m_camerasScript.SetWinEvent(side, 30);
+		//m_camerasScript.SetWinEvent(side, 30);
 
 		while (index != 2)
 		{
@@ -297,6 +316,7 @@ public class PlayerScript : MonoBehaviour {
 
 	void UpdateMoveCount()
 	{
+		/*
 		if (m_camerasScript.m_isIntroEnded)
 		{
 			if (m_job == Job.Cat)
@@ -312,11 +332,12 @@ public class PlayerScript : MonoBehaviour {
 			else
 				m_speedBoost = 0f;
 		}
+		*/
 	}
 
 	void UpdateScore()
 	{
-		if (m_camerasScript.m_isIntroEnded && m_job == Job.Mouse)
+		if (m_job == Job.Mouse)
 			m_scoreTime += Time.deltaTime;
 	}
 
@@ -343,6 +364,23 @@ public class PlayerScript : MonoBehaviour {
 		m_indexMiddle = index;
 		m_nextIndexMiddle = index;
 		transform.position = Constants.BottomPosition[m_indexMiddle];
+	}
+
+	[PunRPC]
+	public void Collided()
+	{
+		if (m_job == Job.Mouse)
+		{
+			SetStun();
+			if (m_camerasManager)
+				m_camerasScript.SetWinEvent(m_side, 30);
+		}
+		InvertJob();
+	}
+
+	public static void Collide()
+	{
+		ScenePhotonView.RPC("Collided", PhotonTargets.All);
 	}
 
 	public void SetStun()
